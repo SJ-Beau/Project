@@ -1,0 +1,1 @@
+This project is a practice exercise using the CRM Sales Opportunities dataset provided by MARVEN Analytics, available through <a href="https://mavenanalytics.io/data-playground"> the Maven Analytics Data Playground.</a>
