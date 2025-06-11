@@ -1,0 +1,36 @@
+Table accounts {
+account varchar [primary key]
+sector varchar
+year_established integer
+revenue numeric
+employees integer
+office_location varchar
+subsidiary_of varchar
+}
+
+Table products {
+product varchar [primary key]
+series varchar
+sales_price numeric
+}
+
+Table sales_teams {
+sales_agent varchar [primary key]
+manager varchar
+regional_office varchar
+}
+
+Table sales_pipeline {
+opportunity_id varchar [primary key]
+sales_agent varchar
+product varchar
+account varchar
+deal_stage varchar
+engage_date date
+close_date date
+close_value numeric
+}
+
+Ref: sales_teams.sales_agent > sales_pipeline.sales_agent
+Ref: products.product > sales_pipeline.product
+Ref: accounts.account > sales_pipeline.account
