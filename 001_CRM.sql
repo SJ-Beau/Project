@@ -73,3 +73,12 @@ ALTER TABLE accounts_new RENAME TO accounts;
 ALTER TABLE products_new RENAME TO products;
 ALTER TABLE sales_teams_new RENAME TO sales_teams;
 ALTER TABLE sales_pipeline_new RENAME TO sales_pipeline;
+
+/*
+เนื่องจากพบว่าใน sales_pipline.product มีข้อมูลที่ผิดอยู่ จาก GTX Pro กลายเป็น GTXPro (ไม่มีเว้นวรรค)
+ซึ่งจะทำให้การเชื่อม Foriegn Key ได้ไม่ตรง จึงต้องแก้ให้เป็น GTX Pro โดยการใช้ UPDATE
+*/
+
+UPDATE sales_pipeline
+SET product = 'GTX Pro'
+WHERE product = 'GTXPro';
