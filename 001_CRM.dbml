@@ -20,6 +20,14 @@ manager varchar
 regional_office varchar
 }
 
+Table target_kpi {
+target_year_month date [primary key]
+monthly_target_central numeric
+monthly_target_east numeric
+monthly_target_west numeric
+monthly_target_total numeric
+}
+
 Table sales_pipeline {
 opportunity_id varchar [primary key]
 sales_agent varchar
