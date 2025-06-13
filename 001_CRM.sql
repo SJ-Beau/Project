@@ -132,3 +132,27 @@ JOIN
 sales_teams ON sales_pipeline.sales_agent = sales_teams.sales_agent
 JOIN
 accounts ON sales_pipeline.account = accounts.account;
+
+/*
+JOIN คอลัม target_kpi และ sales_pipeline โดยรวม close_value แยกตามเดือน
+DATE(sales_pipeline.close_date, 'start of month')
+หมายความว่า เราจะเอาค่า close_date ของแต่ละแถวในตาราง sales_pipeline แล้วแปลงเป็นวันที่ที่ตรงกับ วันแรกของเดือนนั้น (start of month) เช่น
+ถ้า close_date = '2023-06-15' → จะกลายเป็น '2023-06-01'
+ถ้า close_date = '2017-10-23' → จะกลายเป็น '2017-10-01'
+*/
+
+SELECT
+target_kpi.target_year_month,
+target_kpi.monthly_target_total,
+SUM(sales_pipeline.close_value) AS total_achieved,
+ROUND((SUM(sales_pipeline.close_value) * 100.0) / target_kpi.monthly_target_total,2) AS percent_achieved
+FROM
+target_kpi
+LEFT JOIN
+sales_pipeline
+ON
+DATE(sales_pipeline.close_date, 'start of month') = target_kpi.target_year_month
+GROUP BY
+target_kpi.target_year_month, target_kpi.monthly_target_total
+ORDER BY
+target_kpi.target_year_month;
