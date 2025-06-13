@@ -25,6 +25,14 @@ manager TEXT,
 regional_office TEXT
 );
 
+CREATE TABLE target_kpi_new (
+target_year_month DATE PRIMARY KEY,
+monthly_target_central NUMERIC,
+monthly_target_east NUMERIC,
+monthly_target_west NUMERIC,
+monthly_target_total NUMERIC
+);
+
 CREATE TABLE sales_pipeline_new (
 opportunity_id TEXT PRIMARY KEY,
 sales_agent TEXT,
@@ -57,6 +65,9 @@ SELECT * FROM products;
 INSERT INTO sales_teams_new
 SELECT * FROM sales_teams;
 
+INSERT INTO target_kpi_new
+SELECT * FROM target_kpi;
+
 INSERT INTO sales_pipeline_new
 SELECT * FROM sales_pipeline;
 
@@ -67,11 +78,13 @@ DROP ตารางเก่าทิ้ง แล้วใช้ ALTER เป�
 DROP TABLE accounts;
 DROP TABLE products;
 DROP TABLE sales_teams;
+DROP TABLE target_kpi;
 DROP TABLE sales_pipeline;
 
 ALTER TABLE accounts_new RENAME TO accounts;
 ALTER TABLE products_new RENAME TO products;
 ALTER TABLE sales_teams_new RENAME TO sales_teams;
+ALTER TABLE target_kpi_new RENAME TO target_kpi;
 ALTER TABLE sales_pipeline_new RENAME TO sales_pipeline;
 
 /*
@@ -82,3 +95,40 @@ ALTER TABLE sales_pipeline_new RENAME TO sales_pipeline;
 UPDATE sales_pipeline
 SET product = 'GTX Pro'
 WHERE product = 'GTXPro';
+
+/*
+ลองเอาตารางทั้งหมดมารวมเข้าด้วยกัน แล้วจัดเรียงคอลัมใหม่
+ใช้ STRFTIME เพิ่มคอลัม close_month_year, close_year} close_month โดยอ้างอิงจาก close_date
+เพื่อไว้ใช้ JOIN กับตาราง target_kpi
+*/
+
+SELECT
+sales_pipeline.opportunity_id,
+sales_pipeline.deal_stage,
+sales_pipeline.engage_date,
+sales_pipeline.close_date,
+STRFTIME('%Y-%m', close_date) AS close_month_year,
+STRFTIME('%Y', close_date) AS close_year,
+STRFTIME('%m', close_date) AS close_month,
+sales_pipeline.close_value,
+sales_pipeline.sales_agent,
+sales_teams.manager,
+sales_teams.regional_office,
+products.product,
+products.series AS product_series,
+products.sales_price,
+accounts.account AS comp_name,
+accounts.subsidiary_of AS sub_of_comp,
+accounts.sector AS industry,
+accounts.year_established,
+accounts.revenue AS comp_annual_rev,
+accounts.employees AS no_of_emp,
+accounts.office_location AS comp_location
+FROM
+sales_pipeline
+JOIN
+products ON sales_pipeline.product = products.product
+JOIN
+sales_teams ON sales_pipeline.sales_agent = sales_teams.sales_agent
+JOIN
+accounts ON sales_pipeline.account = accounts.account;
